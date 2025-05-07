@@ -1,0 +1,43 @@
+.form{
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    height: 40vh;
+    justify-content: space-evenly;
+    background-color: rgba(224, 239, 224, 0.848);
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.inputField{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    margin: 0px 10%;
+    
+}
+
+.inputField> label{
+    margin: 2px;
+}
+
+.input{
+    height: 40px;
+    border: 1px solid black;
+    border-radius: 9px;
+    padding: 0px 4px;
+}
+
+.signup{
+    background-color:  rgba(24, 62, 24, 0.848);
+    color: white;
+    height: 40px;
+    border-radius: 9px;
+    font-weight: bolder;
+    font-size: 14pt;
+}
+
+.warn{
+    color: rgba(144, 30, 30, 0.868);
+}
