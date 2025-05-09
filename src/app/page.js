@@ -1,8 +1,8 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Layout from "@components/group/HomeLayout";
+
 
 export default function Home() {
   return (
-    <h1>In development</h1>
+    <Layout/>
   );
 }

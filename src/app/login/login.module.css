@@ -1,39 +1,105 @@
-
-.form{
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
     display: flex;
-    width: 50%;
-    height: 35vh;
-    flex-direction: column;
-    border: 2px solid #000000;
-    border-radius: 9px;
-    background-color:  rgba(224, 239, 224, 0.848);
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-
-.inputField{
+.container {
     display: flex;
-    flex-direction: column;
-    margin: 0% 10%;
-    height: 30%;
-    justify-content: space-evenly;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 400px;
+    max-width: 500px;
 }
 
-.form > button{
-    margin: 0% 10%;
-    height: 15%;
+.form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
     border-radius: 10px;
-    border: 2px solid black;
-    background-color:  rgba(24, 62, 24, 0.848);
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form > div{
+    display: flex;
+    flex-direction: column;
+}
+.inputField {
+    margin-bottom: 20px;
+}
+
+.inputField label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.input {
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 0 10px;
+    font-size: 14px;
+}
+
+.form > button {
+    height: 45px;
+    border-radius: 5px;
+    border: none;
+    background-color: #4CAF50;
     color: white;
-    font-weight: bolder;
-    font-size: 14pt;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
 }
 
+.form > button:hover {
+    background-color: #45a049;
+}
 
-.input{
-    height: 50%;
-    border-radius: 10px;
-    border: 2px solid black;
-    padding: 0px 10px;
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.loader div {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+.invalid{
+    color: rgb(194, 86, 86);
+    font-style: italic;
+    margin-bottom: 5px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

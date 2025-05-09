@@ -1,0 +1,45 @@
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.groupList {
+    width: 25%;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.groupListItems {
+    list-style-type: none;
+    padding: 0;
+}
+
+.group {
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.mainContent {
+    flex: 1;
+    background-color: #eaeaea;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.iconGroup{
+    display: flex;
+    align-items: center;
+
+}
+
+.iconGroup > img{
+    border-radius: 50%;
+
+}
+
+.header{
+    text-align: center;
+    height: 40px;
+    padding: 5px;
+}

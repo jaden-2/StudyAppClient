@@ -51,7 +51,7 @@ export default function Signup(){
         }
     }
 
-    const signupPage = <div className={"container"}>
+    const signupPage = <div className={style.container}>
         <form action="#" className={style.form} onSubmit={handleSignup}>
         
             <section className={style.inputField}>
