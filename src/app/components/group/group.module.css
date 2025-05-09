@@ -23,8 +23,11 @@
     flex: 1;
     background-color: #eaeaea;
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Stack title and messages vertically */
+    justify-content: flex-start; /* Align content to the top */
     align-items: center;
+    padding: 20px; /* Add padding for spacing */
+    overflow-y: auto; /* Allow scrolling if content overflows */
 }
 
 .iconGroup{
@@ -42,4 +45,70 @@
     text-align: center;
     height: 40px;
     padding: 5px;
+}
+
+.messages{
+    list-style-type: none;
+}
+
+.messageContainer {
+    width: 100%;
+    
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-y: auto; /* Allow scrolling for messages */
+    max-height: 70vh; /* Limit the height of the message container */
+}
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form textarea {
+    flex: 1;
+    width: 100%; /* Make the textarea take the full width of the form */
+    height: 70px; /* Set a fixed height */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    margin-right: 10px;
+    resize: none;
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+    word-wrap: break-word; /* Ensure long words break to the next line */
+    overflow-wrap: break-word; /* Modern equivalent for word wrapping */
+    white-space: pre-wrap;
+}
+
+.form button {
+    height: 40px;
+    width: 100px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form button:hover {
+    background-color: #45a049;
 }

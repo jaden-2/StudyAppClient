@@ -2,10 +2,12 @@
 import {React, useState} from 'react';
 import styles from "./group.module.css";
 import GroupIcon from 'app/components/group/groupIcon';
+import Group from './group';
 
 
 const Layout = () => {
-  const [group, setGroup] = useState("Welcome to StudyApp")
+  const [group, setGroup] = useState(null)
+
   const groups =  [
     {
       title : "Math Study Group",
@@ -47,7 +49,7 @@ const Layout = () => {
 
       {/* Main Content */}
       <div className={styles.mainContent}>
-        <h1>{group}</h1>
+        <h1><Group props={group}/></h1>
       </div>
     </div>
     </>

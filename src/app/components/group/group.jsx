@@ -1,8 +1,9 @@
 'use client';
 
-import Message from "app/components/message";
+import Message from "@components/msg/message";
+import style from "./group.module.css"
 
-export default function Group({group}) {
+export default function Group(props) {
     const messages = [
         { sender: "Alice", content: "Hey everyone, how's it going?" },
         { sender: "Bob", content: "I'm doing great! Just finished my math homework." },
@@ -15,21 +16,28 @@ export default function Group({group}) {
         { sender: "Ivy", content: "Can we also discuss the upcoming project deadline?" },
         { sender: "Jack", content: "Yes, let's plan a meeting for that." }
     ];
-    if(group == null){
+    if(props == null){
         return(
-            <div><h1>Welcome to Study App</h1></div>
+            <div><h1>Welcome to StudyApp</h1></div>
         )
     }
     return (
         <div>
-            <h1>Group Messages</h1>
-            <ul>
-                {messages.map((message, index) => (
-                    <li key={index}>
-                        <Message props={message}/>
-                    </li>
-                ))}
-            </ul>
+            <div className={style.title}>Group title</div>
+            <div className={style.messageContainer}>
+                <ul className={style.messages}>
+                    {messages.map((message, index) => (
+                        <li key={index}>
+                            <Message props={message}/>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            <form action="" method="post" className={style.form}>
+                <textarea name="message" id="" cols={5} rows={3}></textarea>
+                <button type="submit">Send</button>
+            </form>
         </div>
     );
 }
