@@ -3,7 +3,7 @@ import {React, useState} from 'react';
 import styles from "./group.module.css";
 import GroupIcon from 'app/components/group/groupIcon';
 import Group from './group';
-
+import Image from 'next/image';
 
 const Layout = () => {
   const [group, setGroup] = useState(null)
@@ -29,7 +29,19 @@ const Layout = () => {
   return (
     <>
     <header className={styles.header}>
+    <button className={styles.buttons} style={{borderRadius: 50}}> 
+      <Image src={"/image/dark mode.svg"}
+      width={35}
+      height={35}
+      alt='dark mode icon' ></Image>
+    </button>
     <h2>Study App</h2>
+    <button type="button" style={{borderRadius: 50}} className={styles.buttons} >
+    <Image src={"/image/profile_green.svg"}
+    width={35}
+    height={35}
+    alt='profile icon'></Image>
+    </button>
     </header>
     <div className={styles.container}>
       
@@ -38,7 +50,7 @@ const Layout = () => {
         <h2>Study Groups</h2>
         <ul className={styles.groupListItems}>
           {groups.map((group, index) => (
-            <li key={index} className={styles.group} onClick={()=>selectGroup(index)}>
+            <li key={index} className={styles.studyGroups} onClick={()=>selectGroup(index)}>
               <GroupIcon props={{
                 title: group.title
               }}/>
@@ -49,7 +61,7 @@ const Layout = () => {
 
       {/* Main Content */}
       <div className={styles.mainContent}>
-        <h1><Group props={group}/></h1>
+        <Group props={group}/>
       </div>
     </div>
     </>

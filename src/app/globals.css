@@ -50,3 +50,18 @@ a {
   background: linear-gradient(45deg, rgb(190, 196, 202) 0%,rgba(224, 239, 224, 0.848) 50%, #272626 100%);
 
 }
+
+
+/*My styles*/
+
+#returnHome{
+  display: none;
+  
+}
+
+
+@media screen and (max-width:500px) {
+  #returnHome{
+    display: block;
+  }
+}

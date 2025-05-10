@@ -6,7 +6,7 @@ export default function GroupIcon({props}){
     return(
         <>
             <div className={styles.iconGroup}>
-                <Image src={"/image/matter_blue.svg"} 
+                <Image src={"/image/matters.svg"} 
                 alt="Group icon" 
                 width={50}
                 height={50}/>

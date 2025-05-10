@@ -2,8 +2,12 @@
 
 import Message from "@components/msg/message";
 import style from "./group.module.css"
+import Image from "next/image";
+import { useRef } from "react";
+
 
 export default function Group(props) {
+    
     const messages = [
         { sender: "Alice", content: "Hey everyone, how's it going?" },
         { sender: "Bob", content: "I'm doing great! Just finished my math homework." },
@@ -21,12 +25,31 @@ export default function Group(props) {
             <div><h1>Welcome to StudyApp</h1></div>
         )
     }
+
+    const goHome = ()=>{
+        props.goHome()
+    }
     return (
-        <div>
-            <div className={style.title}>Group title</div>
-            <div className={style.messageContainer}>
+        <div className={style.group}>
+            <div className={style.title}>
+                <button className={style.buttons} id="returnHome" onClick={goHome}>
+                    <Image src={"/image/arrow_back.svg"}
+                    width={25}
+                    height={25}
+                    alt="back arrow"></Image>
+                </button>
+                <span>Group title</span>
+                <button className={style.buttons}>
+                    <Image src={"/image/more.svg"}
+                    width={25}
+                    height={25}
+                    alt="more"></Image>
+                </button>
+            </div>
+           
+        <div className={style.messageContainer}>
                 <ul className={style.messages}>
-                    {messages.map((message, index) => (
+                {messages.map((message, index) => (
                         <li key={index}>
                             <Message props={message}/>
                         </li>
@@ -35,9 +58,12 @@ export default function Group(props) {
             </div>
 
             <form action="" method="post" className={style.form}>
-                <textarea name="message" id="" cols={5} rows={3}></textarea>
-                <button type="submit">Send</button>
+                <textarea name="message"></textarea>
+                <button type="submit" className={style.buttons}>
+                    <Image src={"/image/send.svg"} width={50} height={50} alt="Send Icon" className={style.Image}></Image>
+                </button>
             </form>
+           
         </div>
     );
 }

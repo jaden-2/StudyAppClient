@@ -1,6 +1,8 @@
 .container {
     display: flex;
     height: 100vh;
+    box-sizing: content-box;
+    
 }
 
 .groupList {
@@ -14,20 +16,19 @@
     padding: 0;
 }
 
-.group {
+.studyGroups {
     margin-bottom: 10px;
     cursor: pointer;
 }
 
 .mainContent {
-    flex: 1;
     background-color: #eaeaea;
     display: flex;
     flex-direction: column; /* Stack title and messages vertically */
     justify-content: flex-start; /* Align content to the top */
     align-items: center;
-    padding: 20px; /* Add padding for spacing */
-    overflow-y: auto; /* Allow scrolling if content overflows */
+    padding: 20px;
+    
 }
 
 .iconGroup{
@@ -41,18 +42,22 @@
 
 }
 
+.group{
+    width: 70vw;
+}
+
 .header{
-    text-align: center;
-    height: 40px;
-    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    height: 50px;
+    padding: 10px;
 }
 
 .messages{
-    list-style-type: none;
+    list-style-type: none; 
 }
 
 .messageContainer {
-    width: 100%;
     
     background-color: #ffffff;
     border-radius: 10px;
@@ -61,12 +66,16 @@
     overflow-y: auto; /* Allow scrolling for messages */
     max-height: 70vh; /* Limit the height of the message container */
 }
+
+
 .title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
     color: #333;
+    display: flex;
+    justify-content: space-between;
 }
 
 .form {
@@ -83,7 +92,8 @@
 .form textarea {
     flex: 1;
     width: 100%; /* Make the textarea take the full width of the form */
-    height: 70px; /* Set a fixed height */
+    min-height: 20px;
+    max-height: 60px;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
@@ -96,19 +106,25 @@
     white-space: pre-wrap;
 }
 
-.form button {
-    height: 40px;
-    width: 100px;
-    border: none;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
+.buttons {
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    background-color: transparent;
+    border: none;
 }
 
-.form button:hover {
-    background-color: #45a049;
+
+
+.buttons:hover {
+    background-color: #e3f7e3;
+}
+
+@media screen and (max-width: 500px){
+    .groupList{
+        display: none;
+    }
+
+    .group{
+        width: 90vw;
+    }
+   
 }
