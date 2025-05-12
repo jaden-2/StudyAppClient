@@ -1,13 +1,21 @@
 'use client';
-
 import Message from "@components/msg/message";
 import style from "./group.module.css"
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Client } from "@stomp/stompjs";
 
+export default function Group({groupData}) {
+    const {group, goHome} = groupData
+    let groupMessages;
 
-export default function Group(props) {
-    
+    if(group){
+    groupMessages = group.messages;
+    }
+
+    const [message, setMessage] = useState("")
+    var clientRef = useRef(null);
+
     const messages = [
         { sender: "Alice", content: "Hey everyone, how's it going?" },
         { sender: "Bob", content: "I'm doing great! Just finished my math homework." },
@@ -20,15 +28,77 @@ export default function Group(props) {
         { sender: "Ivy", content: "Can we also discuss the upcoming project deadline?" },
         { sender: "Jack", content: "Yes, let's plan a meeting for that." }
     ];
-    if(props == null){
+    let sty = {
+        display:"flex",
+        justifyContent:"center",
+        alignItems: "center",
+        height: "60%",
+        width: "90vw",
+        marginLeft: "40px"
+    }
+
+    if(group == null){
         return(
-            <div><h1>Welcome to StudyApp</h1></div>
+            <div style={sty}><h1>Welcome to StudyApp</h1></div>
         )
     }
 
-    const goHome = ()=>{
-        props.goHome()
+    useEffect(()=>{
+        if(!group)
+            return;
+        const token = localStorage.getItem("jwtToken")
+
+        if(!token)
+            return;
+
+        const client = new Client({
+            brokerURL: "ws://localhost:9000/ws-studyApp",
+            connectHeaders: {
+                Authorization: `Bearer ${token}`
+            },
+            onConnect: (stage)=>{
+                console.log(`Connected to ${stage}`)
+                client.subscribe("/sock/studyApp/topic", (message)=>{
+                    console.log(JSON.parse(message))
+                })
+            },
+
+            onStompError: (frame)=>{
+                console.error('Broker reported error: ', frame.headers['message']);
+                console.error('Additional details: ', frame.body);
+            }
+        })
+
+        client.activate();
+        clientRef.current = client;
+        
+        return ()=>{
+            client.deactivate()
+        }
+    }, [group])
+    
+
+    const sendMessage =  (event)=>{
+        event.preventDefault()
+        if(!clientRef.current || !clientRef.current.connected){
+            console.error("Client not connected")
+            return
+        }
+
+        let msgDto = {
+        content: message,
+        "group": group.title
+        }
+
+        clientRef.current.publish({
+            destination: "/sock/studyApp/group/chat", 
+            body: JSON.stringify(msgDto)
+        })
+        setMessage("")
+        
+        
     }
+    
     return (
         <div className={style.group}>
             <div className={style.title}>
@@ -38,7 +108,7 @@ export default function Group(props) {
                     height={25}
                     alt="back arrow"></Image>
                 </button>
-                <span>Group title</span>
+                <span>{group.title}</span>
                 <button className={style.buttons}>
                     <Image src={"/image/more.svg"}
                     width={25}
@@ -57,13 +127,12 @@ export default function Group(props) {
                 </ul>
             </div>
 
-            <form action="" method="post" className={style.form}>
-                <textarea name="message"></textarea>
-                <button type="submit" className={style.buttons}>
-                    <Image src={"/image/send.svg"} width={50} height={50} alt="Send Icon" className={style.Image}></Image>
+            <form action="" method="post" className={style.form} onSubmit={sendMessage}>
+                <textarea name="message" value={message} onChange={(e)=>setMessage(e.target.value)} placeholder="Enter message"></textarea>
+                <button type="submit" className={style.buttons} disabled={message==""}>
+                    <Image src={"/image/send.svg"} width={50} height={50} alt="Send Icon" className={`${message==""? style.disabled:""}`}></Image>
                 </button>
             </form>
-           
         </div>
     );
 }

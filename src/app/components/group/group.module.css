@@ -6,9 +6,12 @@
 }
 
 .groupList {
-    width: 25%;
+    width: 30%;
     background-color: #f4f4f4;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10;
 }
 
 .groupListItems {
@@ -19,8 +22,15 @@
 .studyGroups {
     margin-bottom: 10px;
     cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: ease 0.3s;
+    box-sizing: border-box;
+    border-radius: 8px;
 }
 
+.studyGroups:hover{
+    background-color: #c2bfbf;
+}
 .mainContent {
     background-color: #eaeaea;
     display: flex;
@@ -28,7 +38,7 @@
     justify-content: flex-start; /* Align content to the top */
     align-items: center;
     padding: 20px;
-    
+    width: 70vw;
 }
 
 .iconGroup{
@@ -43,7 +53,7 @@
 }
 
 .group{
-    width: 70vw;
+    width: 100%;
 }
 
 .header{
@@ -113,18 +123,27 @@
 }
 
 
-
 .buttons:hover {
     background-color: #e3f7e3;
 }
 
+.disabled{
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
 @media screen and (max-width: 500px){
     .groupList{
-        display: none;
+        width: 100vw; 
+        
     }
-
-    .group{
-        width: 90vw;
+    .groupList.hidden{
+        opacity: 0;
+        visibility: hidden;
+    }
+    .mainContent{
+        width: 100vw;
+        display: none;
     }
    
 }

@@ -1,5 +1,6 @@
 'use client';
 import style from "./signup.module.css";
+import { useRouter } from "next/navigation";
 
 const { useState, useRef, useEffect } = require("react");
 
@@ -7,7 +8,7 @@ export default function Signup(){
     const [username, setusername] = useState("Lizzy")
     const [password, setpassword] = useState("")
     const [repassword, setrepassword] = useState("")
-
+    const router = useRouter()
     const myElement = useRef(null);
 
     useEffect(()=>{
@@ -42,6 +43,7 @@ export default function Signup(){
         
         if(response.status == 201){
             let data = await response.json()
+            router.push("/login")
             console.log(data)
         }else{
             console.error("Failed to sign up")

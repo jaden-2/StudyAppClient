@@ -39,7 +39,7 @@ export default function Login(){
     
             if(response.status == 200){
                 let responseData = await response.json()
-                localStorage.setItem("token", responseData.token)
+                localStorage.setItem("jwtToken", responseData.token)
                 console.log(responseData)
                 router.push("/")
             }else{
