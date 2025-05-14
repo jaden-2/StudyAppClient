@@ -1,178 +1,271 @@
 'use client'
-import {React, useEffect, useRef, useState} from 'react';
-import styles from "./group.module.css";
+import { React, useEffect, useRef, useState } from 'react';
+import styles from "./homeLayout.module.css";
 import GroupIcon from 'app/components/group/groupIcon';
 import Group from './group';
 import Image from 'next/image';
-import useScreenResize from './screenResize';
 import CreateGroup from './createGroup';
+import { useRouter } from 'next/navigation';
+import Profile from '../profile/profile';
+import FancyDisplay from '../test/FancyDisplay';
+import ActionBar from '../Action/actionBar';
+import JoinGroup from './joinGroup';
 
 const Layout = () => {
-  const [group, setGroup] = useState(null)
-  const width = useScreenResize()
-  const sidebar = useRef(null)
-  const mainContent = useRef(null)
-  const [sideBarVisible, setSidbarVisible] = useState(true)
-  const [isNewGroupDialog, setIsNewGroupDialog] = useState(false)
-  const [groups, setUserGroups] = useState([])
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [currentUser, setCurrentUser] = useState (null)
+  const [groups, setGroups] = useState([]);
+  const [isNewGroupDialog, setIsNewGroupDialog] = useState(false);
+  const [showJoinDialog, setShowJoinDialog] = useState(false)
+  const [isSidebarVisible, setSidebarVisible] = useState(true);
+  const [showProfile, setShowProfile] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false)
+  const router = useRouter();
+
+  //server 
+    const baseUrl = "http://localhost:9000/"
+    const groupUrl = "api/studyApp/account/group"
+    const userUrl = "api/studyApp/account"
+
+  //
  
-  const groupApiUrl = "http://localhost:9000/api/studyApp/account/group"
-  const createGroupUrl = "http://localhost:9000/api/studyApp/group"
-  let token;
-  // template hard coded groups
-  const legacy =  [
-    {
-      title : "Math Study Group",
-      describtion: "Study Group for math"
-    },
-    {
-      title: "Science Enthusiasts",
-      describtion: "Science group for math"
-    },
-    {
-      title: "History buffs",
-      describtion: "Study Group for History"
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  useEffect(() => {
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-theme');
     }
-  ];
-  // -----------------------------------Template-------------------------------
+  }, []);
 
-  // load user groups when component is mounted
-  useEffect( ()=>{
-    token = localStorage.getItem("jwtToken")
-    if(token){
-      const getUserGroups = async ()=>{
-          try{
-          let resposnse = await fetch(groupApiUrl, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              
-            }
-          })
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    if (!isDarkMode) {
+      document.body.classList.add('dark-theme');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-theme');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
-          if(resposnse.status == 200){
-            let data = await resposnse.json()
-            setUserGroups(data)
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+    const fetchUser = async ()=>{
+      try{
+        const response = await fetch( baseUrl+userUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        }catch(e){
-          console.error(e.message)
+        })
+
+        if(response.status == 200){
+          const data = await response.json()
+          console.log(data)
+          setCurrentUser(data)
         }
-      }
-      getUserGroups()
-
-    }
-  }, [])
-
-
-  const toggleGroup = (id)=>{
-     if(width <= 500 && sidebar.current && mainContent.current){
-      if(sideBarVisible){
-        setSidbarVisible(false)
-        sidebar.current.style.display = "none"
-        mainContent.current.style.display = "block"
+      }catch (e){
+        console.error(e)
       }
     }
+    fetchUser()
+    const fetchGroups = async () => {
+      try {
+        const response = await fetch(baseUrl+groupUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
 
-    setGroup(groups[id])
-  }
+        if (response.status === 200) {
+          const data = await response.json();
+          setGroups(data);
+        } else if (response.status === 401) {
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error('Failed to fetch groups:', error);
+      }
+    };
 
-  const goHome = ()=>{
-    if(width <=500 && sidebar.current && mainContent.current){
-      sidebar.current.style.display = "block"
-      mainContent.current.style.display = "none"
-      setSidbarVisible(true)
+    fetchGroups();
+  }, [router]);
+
+  const handleGroupSelect = (group) => {
+    setSelectedGroup(group);
+    setSidebarVisible(false);
+  };
+
+  const handleCreateGroup = async (groupData) => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      router.push("/login")
     }
-  }
-  const groupProps = {
-    "group" : group,
-    "goHome": goHome
-  }
 
-  const displayCreateGroupDialog = ()=>{
-    if(!isNewGroupDialog){
-      setIsNewGroupDialog(true)
-      console.log(isNewGroupDialog)
-    }
-  }
-  
-  const onClose = ()=>{
-    setIsNewGroupDialog(false)
-  }
-
-  const onCreate = async (groupDto)=>{
-    token = localStorage.getItem("jwtToken")
-
-    try{
-      if(!token)
-        return;
-
-      let response = await fetch(createGroupUrl, {
-        method: "post", 
+    try {
+      const response = await fetch("http://localhost:9000/api/studyApp/group", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(groupDto)
+        body: JSON.stringify(groupData)
+      });
+
+      if (response.status === 201) {
+        const newGroup = await response.json();
+        setGroups([...groups, newGroup]);
+        setIsNewGroupDialog(false);
+      }
+    } catch (error) {
+      console.error('Failed to create group:', error);
+    }
+  };
+
+  const handleJoinGroup = async (id)=>{
+    const token = localStorage.getItem("jwtToken")
+    if(!token){
+      router.push("/login")
+    }
+
+    try{
+      console.log(`${baseUrl}${groupUrl}?group=${id}`)
+      let response = await fetch(`${baseUrl}${groupUrl}?group=${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+
+        method: "PUT"
       })
-      
-      if(response.status == 201){
-        let newGroup = await response.json()
-        setUserGroups(prev => [...prev, newGroup])
-      }  
+
+      if(response.status == 202){
+        const sess = await response.json()
+        setGroups([...groups, sess])
+        setShowJoinDialog(false)
+      }else{
+        alert(`Could not join group ${id}`)
+      }
     }catch(e){
       console.error(e)
     }
   }
+
   return (
-    <>
-    {/*Header */}
-    <header className={styles.header}>
-      <button className={styles.buttons} style={{borderRadius: 50}}> 
-        <Image src={"/image/dark mode.svg"}
-          width={35}
-          height={35}
-          alt='dark mode icon' >
-        </Image>
-      </button>
+    <div className={`${styles.wrapper} ${isDarkMode ? 'dark-theme' : ''}`}>
+      <header className={styles.header}>
+        <div className={styles.actionBar}>
+        <button className={styles.iconButton} onClick={() => setSidebarVisible(!isSidebarVisible)}>
+          <Image src="/image/home.svg" width={24} height={24} alt="Menu" />
+        </button>
 
-      <h2>Study App</h2>
-
-      <button type="button" style={{borderRadius: 50}} className={styles.buttons} >
-        <Image src={"/image/profile_green.svg"}
-          width={35}
-          height={35}
-          alt='profile icon'>
-        </Image>
-      </button>
-    </header>
-
-    <div className={styles.container}>
-
-      {/* Sidebar */}
-      <div className={styles.groupList} id="groupList" ref={sidebar}>
-        <h2>Study Groups</h2>
-        <ul className={styles.groupListItems}>
-          {groups.map((group, index) => (
-            <li key={index} className={styles.studyGroups} onClick={()=>toggleGroup(index)}>
-              <GroupIcon group={group}/>
-            </li>
-          ))}
-        </ul>
-       <div className="createGroup">
-          <button onClick={displayCreateGroupDialog}>
-            <Image src={"/image/add.svg"}
-            width={50}
-            height={50} alt='create group'></Image>
+        <div className={styles.menuSection}>
+          <button 
+            className={styles.iconButton} 
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            <Image src="/image/menu.svg" width={20} height={20} alt="" />
           </button>
-          {isNewGroupDialog?<CreateGroup onClose={onClose} onCreate={onCreate}/>: ""}
-       </div>
+          
+          {showMenu && (
+            <div className={styles.actionBarContainer}>
+              <ActionBar 
+                onCreateGroup={() => setIsNewGroupDialog(true)}
+                onJoinGroup={() => setShowJoinDialog(true)}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className={styles.mainContent} ref={mainContent}>
-        <Group groupData = {groupProps}/>
+        <h2>Study App</h2>
+        <div className={styles.headerActions}>
+          <button 
+            className={styles.iconButton} 
+            onClick={toggleTheme}
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <Image 
+              src={isDarkMode ? "/image/light_mode.svg" : "/image/dark_mode.svg"} 
+              width={24} 
+              height={24} 
+              alt="Toggle theme" 
+            />
+          </button>
+          <button className={styles.iconButton} onClick = {()=>setShowProfile(true)} >
+            <Image src="/image/profile_green.svg" width={24} height={24} alt="Profile" />
+          </button>
+        </div>
+      </header>
+
+      <div className={styles.container}>
+        <aside className={`${styles.sidebar} ${isSidebarVisible ? styles.visible : ''}`}>
+          <h2>Study Groups</h2>
+          <div className={styles.groupList}>
+            {groups.map((group, index) => (
+              <div 
+                key={group.id || index}
+                className={styles.groupItem}
+                onClick={() => handleGroupSelect(group)}
+              >
+                <GroupIcon group={group} />
+              </div>
+            ))}
+          </div>
+          
+        </aside>
+        {showProfile && (
+            <FancyDisplay>
+                <Profile 
+                    user={currentUser}
+                    onClose={() => setShowProfile(false)}
+                />
+            </FancyDisplay>
+        )}
+        {showJoinDialog && (
+            <FancyDisplay>
+                <JoinGroup
+                    onClose={() => setShowJoinDialog(false)}
+                    onJoin={handleJoinGroup}
+                />
+            </FancyDisplay>
+        )}
+        <main className={styles.mainContent}>
+          {selectedGroup ? (
+            <Group 
+              groupData={{
+                group: selectedGroup,
+                goHome: () => setSelectedGroup(null)
+              }}
+            />
+          ) : (
+            <div className={styles.welcome}>
+              <h1>Welcome to StudyApp</h1>
+              <p>Select a group to start collaborating</p>
+            </div>
+          )}
+        </main>
       </div>
+
+      {isNewGroupDialog && (
+        <FancyDisplay>
+          <CreateGroup 
+          onClose={() => setIsNewGroupDialog(false)}
+          onCreate={handleCreateGroup}
+        />
+        </FancyDisplay>
+      )}
     </div>
-    </>
   );
 };
 

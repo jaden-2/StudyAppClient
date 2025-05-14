@@ -13,7 +13,7 @@ export default function Login(){
     const router = useRouter()
 
     let user = {
-        username: username,
+        username: username.trim(),
         password: password
     }
 
@@ -39,8 +39,8 @@ export default function Login(){
     
             if(response.status == 200){
                 let responseData = await response.json()
-                localStorage.setItem("jwtToken", responseData.token)
-                console.log(responseData)
+                localStorage.setItem(`jwtToken`, responseData.token)
+                
                 router.push("/")
             }else{
                 let responseDate = await response.json()

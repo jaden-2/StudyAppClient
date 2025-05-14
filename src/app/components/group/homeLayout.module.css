@@ -1,0 +1,239 @@
+.wrapper {
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+/* Light theme (default) */
+.wrapper {
+    background-color: #f8fafc;
+    color: #1e293b;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.headerActions{
+    display: flex;
+    justify-content: space-evenly;
+}
+.header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+}
+
+.iconButton {
+    background: transparent;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconButton:hover {
+    background-color: #f1f5f9;
+}
+
+.container {
+    display: flex;
+    padding-top: 64px;
+    height: calc(100vh - 64px);
+}
+
+.sidebar {
+    width: 280px;
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 16px;
+}
+
+.groupList {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.groupItem {
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.groupItem:hover {
+    background-color: #f1f5f9;
+}
+
+.createGroupButton {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.createGroupButton:hover {
+    background: #4338ca;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 24px;
+    background-color: #f8fafc;
+    overflow-y: auto;
+}
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 24px;
+}
+
+.welcome h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 16px;
+    transition: color 0.3s ease;
+}
+
+.welcome p {
+    font-size: 16px;
+    color: #64748b;
+    transition: color 0.3s ease;
+}
+
+.menuSection {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.actionBar{
+    display: flex;
+    
+    justify-content: space-between;
+}
+.actionBarContainer {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    z-index: 100;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        height: calc(100vh - 64px);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar.visible {
+        transform: translateX(0);
+    }
+}
+
+/* Dark theme */
+:global(.dark-theme) .wrapper {
+    background-color: #1e293b;
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .header {
+    background-color: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+
+:global(.dark-theme) .header h2 {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .sidebar {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+:global(.dark-theme) .groupItem {
+    background-color: #334155;
+}
+
+:global(.dark-theme) .groupItem:hover {
+    background-color: #475569;
+}
+
+:global(.dark-theme) .welcome {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .welcome h1 {
+    color: #f1f5f9;
+}
+
+:global(.dark-theme) .welcome p {
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .iconButton {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .iconButton:hover {
+    background-color: #334155;
+}
+
+:global(.dark-theme) .mainContent {
+    background-color: #0f172a;
+}

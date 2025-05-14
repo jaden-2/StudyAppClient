@@ -1,0 +1,147 @@
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 32px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 14px;
+}
+
+.idBox {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.groupId {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 16px;
+    color: #2d3748;
+    word-break: break-all;
+}
+
+.copyButton {
+    background: #4338ca;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copyButton:hover {
+    background: #3730a3;
+    transform: translateY(-1px);
+}
+
+.closeButton {
+    width: 100%;
+    padding: 12px;
+    margin-top: 16px;
+    background: #f3f4f6;
+    color: #4b5563;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+    background: #e5e7eb;
+}
+
+.toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+/* Dark mode styles */
+:global(.dark-theme) .container {
+    background: #1e293b;
+}
+
+:global(.dark-theme) .title {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .subtitle {
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .idBox {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+:global(.dark-theme) .groupId {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .copyButton {
+    background: #6366f1;
+}
+
+:global(.dark-theme) .copyButton:hover {
+    background: #4f46e5;
+}
+
+:global(.dark-theme) .closeButton {
+    background: #334155;
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .closeButton:hover {
+    background: #475569;
+}
+
+:global(.dark-theme) .toast {
+    background: #059669;
+}

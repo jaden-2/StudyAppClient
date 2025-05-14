@@ -1,0 +1,105 @@
+.container {
+    padding: 24px;
+    max-width: 400px;
+    text-align: center;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.warningIcon {
+    color: #f59e0b;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.message {
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.groupName {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.cancelButton, 
+.leaveButton {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelButton {
+    background: #f1f5f9;
+    color: #64748b;
+    border: none;
+}
+
+.cancelButton:hover {
+    background: #e2e8f0;
+}
+
+.leaveButton {
+    background: #ef4444;
+    color: white;
+    border: none;
+}
+
+.leaveButton:hover {
+    background: #dc2626;
+}
+
+/* Dark mode styles */
+:global(.dark-theme) .container {
+    background: #1e293b;
+}
+
+:global(.dark-theme) .title {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .message {
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .groupName {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .cancelButton {
+    background: #334155;
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .cancelButton:hover {
+    background: #475569;
+}
+
+:global(.dark-theme) .leaveButton {
+    background: #dc2626;
+}
+
+:global(.dark-theme) .leaveButton:hover {
+    background: #b91c1c;
+}

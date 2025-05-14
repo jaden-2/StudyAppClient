@@ -4,45 +4,35 @@ import style from "./group.module.css"
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
+import ShareGroup from "./shareGroup";
+import FancyDisplay from "../test/FancyDisplay";
+import LeaveGroup from "./leaveGroup";
 
 export default function Group({groupData}) {
     const {group, goHome} = groupData
-    let groupMessages;
+    let [messages, setMessages] = useState(group.messages)
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [shareGroupVisible, setShareGroupVisible] = useState(false)
+    const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+    const toggleDropdown = () => {
+        setDropdownVisible(!dropdownVisible);
+    };
 
-    if(group){
-    groupMessages = group.messages;
+    const closeShareGroup = ()=>{
+        setShareGroupVisible(!shareGroupVisible)
     }
 
+    function handleLeaveGroup(){
+
+    }
+    function setShowLeaveDialogFunc(){
+        setShowLeaveDialog(!showLeaveDialog)
+    }
     const [message, setMessage] = useState("")
     var clientRef = useRef(null);
 
-    const messages = [
-        { sender: "Alice", content: "Hey everyone, how's it going?" },
-        { sender: "Bob", content: "I'm doing great! Just finished my math homework." },
-        { sender: "Charlie", content: "Anyone up for a study session later?" },
-        { sender: "Diana", content: "Sure, I need help with history." },
-        { sender: "Eve", content: "I can help with history, Diana!" },
-        { sender: "Frank", content: "Does anyone have notes for the last science lecture?" },
-        { sender: "Grace", content: "I do! I'll share them in the group chat." },
-        { sender: "Hank", content: "Thanks, Grace! You're a lifesaver." },
-        { sender: "Ivy", content: "Can we also discuss the upcoming project deadline?" },
-        { sender: "Jack", content: "Yes, let's plan a meeting for that." }
-    ];
-    let sty = {
-        display:"flex",
-        justifyContent:"center",
-        alignItems: "center",
-        height: "60%",
-        width: "90vw",
-        marginLeft: "40px"
-    }
-
-    if(group == null){
-        return(
-            <div style={sty}><h1>Welcome to StudyApp</h1></div>
-        )
-    }
-
+ 
+ 
     useEffect(()=>{
         if(!group)
             return;
@@ -52,14 +42,21 @@ export default function Group({groupData}) {
             return;
 
         const client = new Client({
-            brokerURL: "ws://localhost:9000/ws-studyApp",
+           brokerURL: `ws://localhost:9000/ws-studyApp?token=${token}`,
+            
             connectHeaders: {
                 Authorization: `Bearer ${token}`
             },
             onConnect: (stage)=>{
                 console.log(`Connected to ${stage}`)
-                client.subscribe("/sock/studyApp/topic", (message)=>{
-                    console.log(JSON.parse(message))
+                client.subscribe(`/sock/studyApp/topic/${group.groupId}`, (message)=>{
+                    try{
+                    const msg = JSON.parse(message.body)
+                    setMessages([...messages, msg])
+                    
+                }catch(e){
+                    console.error(e)
+                }
                 })
             },
 
@@ -67,14 +64,15 @@ export default function Group({groupData}) {
                 console.error('Broker reported error: ', frame.headers['message']);
                 console.error('Additional details: ', frame.body);
             }
-        })
-
+    })
+        
         client.activate();
         clientRef.current = client;
         
         return ()=>{
             client.deactivate()
         }
+
     }, [group])
     
 
@@ -87,52 +85,115 @@ export default function Group({groupData}) {
 
         let msgDto = {
         content: message,
-        "group": group.title
+        "session": {
+            id: group.id,
+            groupId: group.groupId,
+            title: group.title,
+            description: group.description
         }
-
+        }
+       
         clientRef.current.publish({
             destination: "/sock/studyApp/group/chat", 
             body: JSON.stringify(msgDto)
         })
-        setMessage("")
         
+        setMessage("")
         
     }
     
     return (
-        <div className={style.group}>
-            <div className={style.title}>
-                <button className={style.buttons} id="returnHome" onClick={goHome}>
-                    <Image src={"/image/arrow_back.svg"}
-                    width={25}
-                    height={25}
-                    alt="back arrow"></Image>
-                </button>
-                <span>{group.title}</span>
-                <button className={style.buttons}>
-                    <Image src={"/image/more.svg"}
-                    width={25}
-                    height={25}
-                    alt="more"></Image>
-                </button>
-            </div>
-           
-        <div className={style.messageContainer}>
-                <ul className={style.messages}>
-                {messages.map((message, index) => (
-                        <li key={index}>
+        <div className={style.groupContainer}>
+            <header className={style.header}>
+                <div className={style.headerLeft}>
+                    <button 
+                        className={style.iconButton} 
+                        onClick={goHome}
+                        aria-label="Go back"
+                    >
+                        <Image src="/image/arrow_back.svg" width={24} height={24} alt="" />
+                    </button>
+                    <h2 className={style.groupTitle}>{group.title}</h2>
+                </div>
+                
+                <div className={style.headerActions}>
+                    <button 
+                        className={style.iconButton}
+                        onClick={toggleDropdown}
+                        aria-label="More options"
+                    >
+                        <Image src="/image/more.svg" width={24} height={24} alt="" />
+                    </button>
+                    
+                    <div className={`${style.dropdown} ${dropdownVisible ? style.show : ''}`}>
+                        <button onClick={closeShareGroup} className={style.dropdownItem}>
+                            <Image src="/image/share.svg" width={20} height={20} alt="" />
+                            Share Group
+                        </button>
+                        <button onClick={setShowLeaveDialogFunc} className={style.dropdownItem}>
+                            <Image src="/image/leave.svg" width={20} height={20} alt="" />
+                            Leave Group
+                        </button>
+                        <button onClick={() => alert(group.description)} className={style.dropdownItem}>
+                            <Image src="/image/info.svg" width={20} height={20} alt="" />
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div className={style.messageContainer}>
+                <div className={style.messageList}>
+                    {messages.map((message, index) => (
+                        <div key={index} className={style.messageWrapper}>
                             <Message props={message}/>
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
+                
+                <form onSubmit={sendMessage} className={style.messageForm}>
+                    <textarea 
+                        name="message"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Type a message..."
+                        className={style.messageInput}
+                    />
+                    <button 
+                        type="submit" 
+                        className={`${style.sendButton} ${message === "" ? style.disabled : ""}`}
+                        disabled={message === ""}
+                    >
+                        <Image 
+                            src="/image/send.svg" 
+                            width={24} 
+                            height={24} 
+                            alt="Send" 
+                            className={style.sendIcon}
+                        />
+                    </button>
+                </form>
             </div>
 
-            <form action="" method="post" className={style.form} onSubmit={sendMessage}>
-                <textarea name="message" value={message} onChange={(e)=>setMessage(e.target.value)} placeholder="Enter message"></textarea>
-                <button type="submit" className={style.buttons} disabled={message==""}>
-                    <Image src={"/image/send.svg"} width={50} height={50} alt="Send Icon" className={`${message==""? style.disabled:""}`}></Image>
-                </button>
-            </form>
+            {shareGroupVisible && (
+                <FancyDisplay>
+                    <ShareGroup 
+                        groupId={group.groupId} 
+                        onClose={closeShareGroup}
+                    />
+                </FancyDisplay>
+            )}
+            {
+                showLeaveDialog && (
+                <FancyDisplay>
+                    <LeaveGroup 
+                        groupName={group.title}
+                        onConfirm={() => handleLeaveGroup()}
+                        onCancel={() => setShowLeaveDialogFunc()}
+                    />
+                 </FancyDisplay>
+                )
+            }
         </div>
     );
 }
