@@ -1,0 +1,85 @@
+.container {
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.icon {
+    color: #4f46e5;
+}
+
+.message {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 24px;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.cancelButton,
+.loginButton {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelButton {
+    background: #f1f5f9;
+    color: #64748b;
+    border: none;
+}
+
+.loginButton {
+    background: #4f46e5;
+    color: white;
+    border: none;
+}
+
+.cancelButton:hover {
+    background: #e2e8f0;
+}
+
+.loginButton:hover {
+    background: #4338ca;
+}
+
+/* Dark mode support */
+:global(.dark-theme) .container {
+    background: #1e293b;
+}
+
+:global(.dark-theme) .message {
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .cancelButton {
+    background: #334155;
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .cancelButton:hover {
+    background: #475569;
+}
+
+:global(.dark-theme) .loginButton {
+    background: #6366f1;
+}
+
+:global(.dark-theme) .loginButton:hover {
+    background: #4f46e5;
+}

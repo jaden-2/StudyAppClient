@@ -10,6 +10,8 @@ import Profile from '../profile/profile';
 import FancyDisplay from '../test/FancyDisplay';
 import ActionBar from '../Action/actionBar';
 import JoinGroup from './joinGroup';
+import Loader from '../common/Loader';
+import LoginRequest from '../auth/LoginRequest';
 
 const Layout = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -21,9 +23,14 @@ const Layout = () => {
   const [showProfile, setShowProfile] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false)
-  const router = useRouter();
+  const [updateToggle, setUpdateToggle] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginRequest, setShowLoginRequest] = useState(false);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
 
+  const router = useRouter();
+  
   //server 
     const baseUrl = "http://localhost:9000/"
     const groupUrl = "api/studyApp/account/group"
@@ -33,6 +40,10 @@ const Layout = () => {
  
   const toggleMenu = () => {
     setShowMenu(!showMenu);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarVisible(prev => !prev);
   };
 
   useEffect(() => {
@@ -56,14 +67,12 @@ const Layout = () => {
   };
 
   useEffect(() => {
+    if(!isLoggedIn) return;
     const token = localStorage.getItem("jwtToken")
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+  
     const fetchUser = async ()=>{
       try{
-        const response = await fetch( baseUrl+userUrl, {
+        const response = await fetch( "http://localhost:9000/api/studyApp/account", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -79,39 +88,78 @@ const Layout = () => {
       }
     }
     fetchUser()
-    const fetchGroups = async () => {
-      try {
-        const response = await fetch(baseUrl+groupUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+
+  }, [router, isLoggedIn]);
+
+  useEffect(()=>{
+      if(!isLoggedIn) return
+
+      const token = localStorage.getItem("jwtToken")
+      
+
+      const fetchGroups = async () => {
+        setIsLoading(true);
+        try {
+          const response = await fetch("http://localhost:9000/api/studyApp/account/group", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          });
+
+          if (response.status === 200) {
+            const data = await response.json();
+            
+            setGroups(data);
+          } else if (response.status === 401) {
+            router.push("/login");
           }
-        });
-
-        if (response.status === 200) {
-          const data = await response.json();
-          setGroups(data);
-        } else if (response.status === 401) {
-          router.push("/login");
+        } catch (error) {
+          console.error('Failed to fetch groups:', error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Failed to fetch groups:', error);
-      }
-    };
+      };
+      fetchGroups();
+    
+  }, [updateToggle, router, isLoggedIn])
 
-    fetchGroups();
-  }, [router]);
+  useEffect(() => {
+    // Allow layout calculations to complete
+    const timer = setTimeout(() => {
+      setIsPageLoaded(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Check for JWT token and set login status
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
-    setSidebarVisible(false);
+    if (window.innerWidth <= 768) {
+        setSidebarVisible(false);
+    }
+  };
+
+  const checkAuth = () => {
+    if (!isLoggedIn) {
+        setShowLoginRequest(true);
+        return false;
+    }
+    return true;
   };
 
   const handleCreateGroup = async (groupData) => {
+    if (!checkAuth()) return;
     const token = localStorage.getItem("jwtToken");
-    if (!token) {
-      router.push("/login")
-    }
 
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:9000/api/studyApp/group", {
         method: "POST",
@@ -124,48 +172,72 @@ const Layout = () => {
 
       if (response.status === 201) {
         const newGroup = await response.json();
-        setGroups([...groups, newGroup]);
+        console.log("Group create");
         setIsNewGroupDialog(false);
+        setShowMenu(false)
+        setUpdateToggle((prev)=>!prev)
       }
     } catch (error) {
       console.error('Failed to create group:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleJoinGroup = async (id)=>{
+    if (!checkAuth()) return;
     const token = localStorage.getItem("jwtToken")
-    if(!token){
-      router.push("/login")
-    }
 
+    setIsLoading(true);
     try{
       console.log(`${baseUrl}${groupUrl}?group=${id}`)
       let response = await fetch(`${baseUrl}${groupUrl}?group=${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         },
-
         method: "PUT"
       })
 
       if(response.status == 202){
         const sess = await response.json()
-        setGroups([...groups, sess])
+        setUpdateToggle((prev)=>!prev)
         setShowJoinDialog(false)
+        setShowMenu(false)
       }else{
         alert(`Could not join group ${id}`)
       }
     }catch(e){
       console.error(e)
+    } finally {
+      setIsLoading(false);
     }
   }
 
+  const handleProfileClick = () => {
+    if (!checkAuth()) return;
+    setShowProfile(true);
+  };
+
+  const handleLogin = () => {
+    router.push('/login');
+    setShowLoginRequest(false);
+  };
+
+  const handleLoginCancel = () => {
+    setShowLoginRequest(false);
+    setIsLoggedIn(false);
+  };
+
   return (
-    <div className={`${styles.wrapper} ${isDarkMode ? 'dark-theme' : ''}`}>
+    <div className={`${styles.wrapper} ${isDarkMode ? 'dark-theme' : ''} ${isPageLoaded ? styles.pageLoaded : ''}`}>
       <header className={styles.header}>
         <div className={styles.actionBar}>
-        <button className={styles.iconButton} onClick={() => setSidebarVisible(!isSidebarVisible)}>
-          <Image src="/image/home.svg" width={24} height={24} alt="Menu" />
+        <button 
+            className={styles.iconButton} 
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+        >
+            <Image src="/image/home.svg" width={24} height={24} alt="Menu" />
         </button>
 
         <div className={styles.menuSection}>
@@ -202,7 +274,7 @@ const Layout = () => {
               alt="Toggle theme" 
             />
           </button>
-          <button className={styles.iconButton} onClick = {()=>setShowProfile(true)} >
+          <button className={styles.iconButton} onClick = {handleProfileClick} >
             <Image src="/image/profile_green.svg" width={24} height={24} alt="Profile" />
           </button>
         </div>
@@ -212,15 +284,19 @@ const Layout = () => {
         <aside className={`${styles.sidebar} ${isSidebarVisible ? styles.visible : ''}`}>
           <h2>Study Groups</h2>
           <div className={styles.groupList}>
-            {groups.map((group, index) => (
-              <div 
-                key={group.id || index}
-                className={styles.groupItem}
-                onClick={() => handleGroupSelect(group)}
-              >
-                <GroupIcon group={group} />
-              </div>
-            ))}
+            {isLoading ? (
+              <Loader />
+            ) : (
+              groups.map((group) => (
+                <div 
+                  key={group.groupId}
+                  className={styles.groupItem}
+                  onClick={() => handleGroupSelect(group)}
+                >
+                  <GroupIcon group={group} />
+                </div>
+              ))
+            )}
           </div>
           
         </aside>
@@ -245,7 +321,8 @@ const Layout = () => {
             <Group 
               groupData={{
                 group: selectedGroup,
-                goHome: () => setSelectedGroup(null)
+                goHome: () => setSelectedGroup(null),
+                refresh: ()=>setUpdateToggle((prev)=>!prev)
               }}
             />
           ) : (
@@ -263,6 +340,14 @@ const Layout = () => {
           onClose={() => setIsNewGroupDialog(false)}
           onCreate={handleCreateGroup}
         />
+        </FancyDisplay>
+      )}
+      {showLoginRequest && (
+        <FancyDisplay>
+            <LoginRequest 
+                onClose={handleLoginCancel}
+                onLogin={handleLogin}
+            />
         </FancyDisplay>
       )}
     </div>

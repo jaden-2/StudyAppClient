@@ -1,6 +1,12 @@
 .wrapper {
     min-height: 100vh;
-    background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.pageLoaded {
+    opacity: 1;
 }
 
 /* Light theme (default) */
@@ -11,19 +17,18 @@
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 24px;
-    background: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 10;
-    background-color: #ffffff;
+    height: 64px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
     border-bottom: 1px solid #e2e8f0;
+    z-index: 100;
 }
 
 .headerActions{
@@ -56,40 +61,36 @@
 
 .container {
     display: flex;
-    padding-top: 64px;
+    width: 100%;
     height: calc(100vh - 64px);
+    margin-top: 64px; /* Add this to create space below header */
+    position: relative;
 }
 
 .sidebar {
     width: 280px;
+    height: 100%;
     background: white;
     border-right: 1px solid #e2e8f0;
-    padding: 20px;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-}
-
-.sidebar h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #64748b;
-    margin-bottom: 16px;
-}
-
-.groupList {
-    flex: 1;
+    padding: 20px;
     overflow-y: auto;
 }
 
-.groupItem {
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
+/* Scrollbar styling */
+.groupList::-webkit-scrollbar {
+    width: 6px;
 }
 
-.groupItem:hover {
-    background-color: #f1f5f9;
+.groupList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.groupList::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
 }
 
 .createGroupButton {
@@ -172,17 +173,20 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .sidebar {
-        width: 100%;
         position: fixed;
-        height: calc(100vh - 64px);
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out;
+        left: -280px;
+        top: 64px; /* Align with header height */
+        z-index: 99;
     }
 
     .sidebar.visible {
-        transform: translateX(0);
+        left: 0;
+    }
+
+    .mainContent {
+        width: 100%;
     }
 }
 
@@ -193,8 +197,8 @@
 }
 
 :global(.dark-theme) .header {
-    background-color: #0f172a;
-    border-bottom: 1px solid #334155;
+    background: #1e293b;
+    border-bottom-color: #334155;
 }
 
 :global(.dark-theme) .header h2 {
@@ -202,16 +206,22 @@
 }
 
 :global(.dark-theme) .sidebar {
-    background-color: #1e293b;
-    border-color: #334155;
+    background: #1e293b;
+    border-right-color: #334155;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-theme) .sidebar h2 {
+    color: #f8fafc;
 }
 
 :global(.dark-theme) .groupItem {
-    background-color: #334155;
+    background: #1e293b;
+    border-color: #334155;
 }
 
 :global(.dark-theme) .groupItem:hover {
-    background-color: #475569;
+    background: #273548;
 }
 
 :global(.dark-theme) .welcome {
@@ -236,4 +246,8 @@
 
 :global(.dark-theme) .mainContent {
     background-color: #0f172a;
+}
+
+:global(.dark-theme) .groupList::-webkit-scrollbar-thumb {
+    background-color: #475569;
 }

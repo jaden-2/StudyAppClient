@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./login.module.css"
 import { useRouter } from "next/navigation";
 
-
 export default function Login(){
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("")
@@ -11,6 +10,14 @@ export default function Login(){
     const [errorMsg, setErrorMsg] = useState(false)
     const errorElement = useRef(null)
     const router = useRouter()
+
+    // Add useEffect to check dark mode preference
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+    }, []);
 
     let user = {
         username: username.trim(),
@@ -55,31 +62,57 @@ export default function Login(){
     }    
 
     return (
-        <>
-        {
-            loader && (
-                <div  className={styles.loader}>
-                    <div></div>
+        <div className={styles.wrapper}>
+            {loader && (
+                <div className={styles.loaderContainer}>
+                    <div className={styles.loaderSpinner}></div>
                 </div>
-            )
-        }
-        <div className={styles.container}>
-            <form action="" className={styles.form} onSubmit={e=> handleLogin(e)}>
-                <div className={styles.inputField}>
-                <label htmlFor="username">Username</label>
-                <input name="username" type="text" value={username} onChange={(e)=> update(e, setUsername)} className={styles.input} placeholder="Username" required />
+            )}
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <h1>Welcome Back!</h1>
+                    <p>Log in to your Study App account</p>
                 </div>
-                <div className={styles.inputField}>
-                <label htmlFor="password">Password</label>
-                <input type="password" name="password" value={password} onChange={e => update(e, setPassword)} className={styles.input} placeholder="Password" required/>
+                <form className={styles.form} onSubmit={e => handleLogin(e)}>
+                    <div className={styles.inputField}>
+                        <label className={styles.label} htmlFor="username">Username</label>
+                        <input 
+                            name="username" 
+                            type="text" 
+                            value={username} 
+                            onChange={(e)=> update(e, setUsername)} 
+                            className={styles.input} 
+                            placeholder="Username" 
+                            required 
+                        />
+                    </div>
+                    <div className={styles.inputField}>
+                        <label className={styles.label} htmlFor="password">Password</label>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            value={password} 
+                            onChange={e => update(e, setPassword)} 
+                            className={styles.input} 
+                            placeholder="Password" 
+                            required
+                        />
+                    </div>
+                    <span 
+                        className={styles.errorMessage}
+                        style={{display: errorMsg? "inline": "none"}}
+                    >
+                        Invalid username or password
+                    </span>    
+                    <button type="submit" className={styles.loginButton}>
+                        Login
+                    </button>    
+                </form>
+                <div className={styles.footer}>
+                    <p>Don't have an account? <a href="/signup" className={styles.link}>Sign up</a></p>
                 </div>
-                <span className={styles.invalid}
-                style={{display: errorMsg? "inline": "none"}}
-                >Invalid username or password</span>    
-                <button type="submit" >Log in</button>    
-            </form>
+            </div>
         </div>
-        </>
     )
 }
 

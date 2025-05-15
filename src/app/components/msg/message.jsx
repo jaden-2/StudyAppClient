@@ -1,6 +1,6 @@
 'use client'
 import styles from "./message.module.css"
-import Image from 'next/image'
+
 
 export default function Message({ props: msg }) {
     const initial = msg.sender.charAt(0).toUpperCase()

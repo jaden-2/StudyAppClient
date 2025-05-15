@@ -7,13 +7,17 @@ import { Client } from "@stomp/stompjs";
 import ShareGroup from "./shareGroup";
 import FancyDisplay from "../test/FancyDisplay";
 import LeaveGroup from "./leaveGroup";
+import Loader from '../common/Loader';
 
 export default function Group({groupData}) {
-    const {group, goHome} = groupData
+    const {group, goHome, refresh} = groupData
+
     let [messages, setMessages] = useState(group.messages)
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [shareGroupVisible, setShareGroupVisible] = useState(false)
     const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+    
     const toggleDropdown = () => {
         setDropdownVisible(!dropdownVisible);
     };
@@ -22,9 +26,35 @@ export default function Group({groupData}) {
         setShareGroupVisible(!shareGroupVisible)
     }
 
-    function handleLeaveGroup(){
+    async function handleLeaveGroup(){
+        let token = localStorage.getItem("jwtToken")
+        if(!token) return;
+       
+        setIsLoading(true);
+        try {
+            let response = await fetch("http://localhost:9000/api/studyApp/account/group",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-type": "application/json"
+                    },
+                    method: "DELETE",
+                    body: JSON.stringify(group)
+                }     
+            );
 
+            if(response.status === 204){
+                refresh();
+                goHome();
+            }
+        } catch(e) {
+            console.error('Error leaving group:', e);
+        } finally {
+            setIsLoading(false);
+            setShowLeaveDialog(false);
+        }
     }
+
     function setShowLeaveDialogFunc(){
         setShowLeaveDialog(!showLeaveDialog)
     }
@@ -52,7 +82,7 @@ export default function Group({groupData}) {
                 client.subscribe(`/sock/studyApp/topic/${group.groupId}`, (message)=>{
                     try{
                     const msg = JSON.parse(message.body)
-                    setMessages([...messages, msg])
+                    setMessages((msgs)=>[...msgs, msg])
                     
                 }catch(e){
                     console.error(e)
@@ -143,36 +173,42 @@ export default function Group({groupData}) {
             </header>
 
             <div className={style.messageContainer}>
-                <div className={style.messageList}>
-                    {messages.map((message, index) => (
-                        <div key={index} className={style.messageWrapper}>
-                            <Message props={message}/>
+                {isLoading ? (
+                    <Loader />
+                ) : (
+                    <>
+                        <div className={style.messageList}>
+                            {messages.map((message, index) => (
+                                <div key={index} className={style.messageWrapper}>
+                                    <Message props={message}/>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                
-                <form onSubmit={sendMessage} className={style.messageForm}>
-                    <textarea 
-                        name="message"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Type a message..."
-                        className={style.messageInput}
-                    />
-                    <button 
-                        type="submit" 
-                        className={`${style.sendButton} ${message === "" ? style.disabled : ""}`}
-                        disabled={message === ""}
-                    >
-                        <Image 
-                            src="/image/send.svg" 
-                            width={24} 
-                            height={24} 
-                            alt="Send" 
-                            className={style.sendIcon}
-                        />
-                    </button>
-                </form>
+                        
+                        <form onSubmit={sendMessage} className={style.messageForm}>
+                            <textarea 
+                                name="message"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Type a message..."
+                                className={style.messageInput}
+                            />
+                            <button 
+                                type="submit" 
+                                className={`${style.sendButton} ${message === "" ? style.disabled : ""}`}
+                                disabled={message === ""}
+                            >
+                                <Image 
+                                    src="/image/send.svg" 
+                                    width={24} 
+                                    height={24} 
+                                    alt="Send" 
+                                    className={style.sendIcon}
+                                />
+                            </button>
+                        </form>
+                    </>
+                )}
             </div>
 
             {shareGroupVisible && (

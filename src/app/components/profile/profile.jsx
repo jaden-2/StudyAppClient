@@ -4,13 +4,13 @@ import { useState } from 'react';
 import styles from './profile.module.css';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import Logout from '@/app/logout/page';
+
 
 export default function Profile({ user, onClose }) {
     const router = useRouter();
     
     const handleLogout = () => {
-        Logout()
+        router.push("logout")
     };
 
     return (

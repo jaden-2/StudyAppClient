@@ -8,9 +8,14 @@ body {
     margin: 0;
 }
 .container{
-    width: 400px;
-    max-width: 500px;
-    box-sizing: content-box;
+    background: white;
+    padding: 32px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    margin: 20px auto;
+    transition: all 0.3s ease;
 }
 .form{
     display: flex;
@@ -20,6 +25,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
     
 }
 
@@ -66,4 +72,137 @@ body {
     color: rgb(194, 86, 86);
     font-style: italic;
     margin-bottom: 5px;
+}
+
+.wrapper {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.header p {
+    color: #64748b;
+    font-size: 16px;
+}
+
+.footer {
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.link:hover {
+    color: #4338ca;
+}
+
+.themeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.themeButton:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode styles */
+:global(.dark-theme) .wrapper {
+    background-color: #0f172a;
+}
+
+:global(.dark-theme) .container {
+    background: #1e293b;
+}
+
+:global(.dark-theme) .header h1 {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .header p {
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .footer {
+    border-top-color: #334155;
+    color: #94a3b8;
+}
+
+:global(.dark-theme) .link {
+    color: #6366f1;
+}
+
+:global(.dark-theme) .link:hover {
+    color: #818cf8;
+}
+
+:global(.dark-theme) .themeButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark-theme) .input {
+    background: #0f172a;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .input::placeholder {
+    color: #64748b;
+}
+
+:global(.dark-theme) .input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+:global(.dark-theme) label {
+    color: #f8fafc;
+}
+
+:global(.dark-theme) .signup {
+    background: #6366f1;
+    color: white;
+}
+
+:global(.dark-theme) .signup:hover {
+    background: #4f46e5;
+}
+
+:global(.dark-theme) .warn {
+    color: #ef4444;
 }
