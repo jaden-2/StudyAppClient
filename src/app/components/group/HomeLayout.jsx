@@ -31,12 +31,9 @@ const Layout = () => {
 
   const router = useRouter();
   
-  //server 
-    const baseUrl = "http://localhost:9000/"
-    const groupUrl = "api/studyApp/account/group"
-    const userUrl = "api/studyApp/account"
-
-  //
+  //API ENDPOINT
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL
+  
  
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -72,7 +69,7 @@ const Layout = () => {
   
     const fetchUser = async ()=>{
       try{
-        const response = await fetch( "http://localhost:9000/api/studyApp/account", {
+        const response = await fetch( `${baseUrl}/account`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -96,11 +93,10 @@ const Layout = () => {
 
       const token = localStorage.getItem("jwtToken")
       
-
       const fetchGroups = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch("http://localhost:9000/api/studyApp/account/group", {
+          const response = await fetch(`${baseUrl}/account/group`, {
             headers: {
               Authorization: `Bearer ${token}`,
             }
@@ -111,7 +107,7 @@ const Layout = () => {
             
             setGroups(data);
           } else if (response.status === 401) {
-            router.push("/login");
+            setShowLoginRequest(true)
           }
         } catch (error) {
           console.error('Failed to fetch groups:', error);
@@ -133,12 +129,11 @@ const Layout = () => {
   }, []);
 
   useEffect(() => {
-    // Check for JWT token and set login status
     const token = localStorage.getItem("jwtToken");
     if (token) {
       setIsLoggedIn(true);
     }
-  }, []); // Empty dependency array means this runs once on mount
+  }, []); 
 
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
@@ -161,7 +156,7 @@ const Layout = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:9000/api/studyApp/group", {
+      const response = await fetch(`${baseUrl}/group`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -190,8 +185,8 @@ const Layout = () => {
 
     setIsLoading(true);
     try{
-      console.log(`${baseUrl}${groupUrl}?group=${id}`)
-      let response = await fetch(`${baseUrl}${groupUrl}?group=${id}`, {
+      console.log(`${baseUrl}/group?group=${id}`)
+      let response = await fetch(`${baseUrl}/account/group?group=${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         },

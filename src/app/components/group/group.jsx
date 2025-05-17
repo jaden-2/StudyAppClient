@@ -11,58 +11,43 @@ import Loader from '../common/Loader';
 
 export default function Group({groupData}) {
     const {group, goHome, refresh} = groupData
-
+    //API ENDPOINT
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL
+    const sockUrl = process.env.NEXT_PUBLIC_API_SOCKET
     let [messages, setMessages] = useState(group.messages)
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [shareGroupVisible, setShareGroupVisible] = useState(false)
     const [showLeaveDialog, setShowLeaveDialog] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
-    
-    const toggleDropdown = () => {
-        setDropdownVisible(!dropdownVisible);
-    };
 
-    const closeShareGroup = ()=>{
-        setShareGroupVisible(!shareGroupVisible)
-    }
-
-    async function handleLeaveGroup(){
-        let token = localStorage.getItem("jwtToken")
-        if(!token) return;
-       
-        setIsLoading(true);
-        try {
-            let response = await fetch("http://localhost:9000/api/studyApp/account/group",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-type": "application/json"
-                    },
-                    method: "DELETE",
-                    body: JSON.stringify(group)
-                }     
-            );
-
-            if(response.status === 204){
-                refresh();
-                goHome();
-            }
-        } catch(e) {
-            console.error('Error leaving group:', e);
-        } finally {
-            setIsLoading(false);
-            setShowLeaveDialog(false);
-        }
-    }
-
-    function setShowLeaveDialogFunc(){
-        setShowLeaveDialog(!showLeaveDialog)
-    }
     const [message, setMessage] = useState("")
     var clientRef = useRef(null);
 
- 
- 
+    const messageListRef = useRef(null);
+    const [isNearBottom, setIsNearBottom] = useState(true);
+    
+    // Keep this effect for group changes
+    useEffect(() => setMessages(group.messages), [group])
+
+    // Add this new effect for scroll management
+    useEffect(() => {
+        const container = messageListRef.current;
+        if (container) {
+            // Scroll to bottom initially or when group changes
+            container.scrollTop = container.scrollHeight;
+            
+            // Add scroll listener
+            const handleScroll = () => {
+                const threshold = 100;
+                const isNear = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+                setIsNearBottom(isNear);
+            };
+            
+            container.addEventListener('scroll', handleScroll);
+            return () => container.removeEventListener('scroll', handleScroll);
+        }
+    }, [group]); // Re-run when group changes
+    
     useEffect(()=>{
         if(!group)
             return;
@@ -72,21 +57,26 @@ export default function Group({groupData}) {
             return;
 
         const client = new Client({
-           brokerURL: `ws://localhost:9000/ws-studyApp?token=${token}`,
+           brokerURL: `${sockUrl}?token=${token}`,
             
             connectHeaders: {
                 Authorization: `Bearer ${token}`
             },
             onConnect: (stage)=>{
                 console.log(`Connected to ${stage}`)
-                client.subscribe(`/sock/studyApp/topic/${group.groupId}`, (message)=>{
-                    try{
-                    const msg = JSON.parse(message.body)
-                    setMessages((msgs)=>[...msgs, msg])
-                    
-                }catch(e){
-                    console.error(e)
-                }
+                client.subscribe(`/sock/studyApp/topic/${group.groupId}`, (message) => {
+                    try {
+                        const msg = JSON.parse(message.body);
+                        setMessages((msgs) => [...msgs, msg]);
+                        
+                        if (isNearBottom && messageListRef.current) {
+                            setTimeout(() => {
+                                messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+                            }, 100);
+                        }
+                    } catch(e) {
+                        console.error(e);
+                    }
                 })
             },
 
@@ -103,7 +93,7 @@ export default function Group({groupData}) {
             client.deactivate()
         }
 
-    }, [group])
+    }, [group, isNearBottom])
     
 
     const sendMessage =  (event)=>{
@@ -131,6 +121,72 @@ export default function Group({groupData}) {
         setMessage("")
         
     }
+
+    async function handleLeaveGroup(){
+        let token = localStorage.getItem("jwtToken")
+        if(!token) return;
+       
+        setIsLoading(true);
+        try {
+            let response = await fetch(`${baseUrl}/account/group`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-type": "application/json"
+                    },
+                    method: "DELETE",
+                    body: JSON.stringify(group)
+                }     
+            );
+
+            if(response.status === 204){
+                refresh();
+                goHome();
+            }
+        } catch(e) {
+            console.error('Error leaving group:', e);
+        } finally {
+            setIsLoading(false);
+            setShowLeaveDialog(false);
+        }
+    }
+
+    const checkIfNearBottom = () => {
+        const container = messageListRef.current;
+        if (container) {
+            const threshold = 100; // pixels from bottom
+            const isNear = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+            setIsNearBottom(isNear);
+        }
+    };
+
+    useEffect(() => {
+        const container = messageListRef.current;
+        if (container) {
+            container.addEventListener('scroll', checkIfNearBottom);
+            return () => container.removeEventListener('scroll', checkIfNearBottom);
+        }
+    }, []);
+
+ 
+    function setShowLeaveDialogFunc(){
+        setShowLeaveDialog(!showLeaveDialog)
+    }
+
+      const send = (e)=>{
+         if(e.key === "Enter" && !e.shiftKey){
+              sendMessage(e)
+            }
+    }
+
+    const toggleDropdown = () => {
+        setDropdownVisible(!dropdownVisible);
+    };
+
+    const closeShareGroup = ()=>{
+        setShareGroupVisible(!shareGroupVisible)
+    }
+
     
     return (
         <div className={style.groupContainer}>
@@ -177,7 +233,10 @@ export default function Group({groupData}) {
                     <Loader />
                 ) : (
                     <>
-                        <div className={style.messageList}>
+                        <div 
+                            ref={messageListRef} 
+                            className={style.messageList}
+                        >
                             {messages.map((message, index) => (
                                 <div key={index} className={style.messageWrapper}>
                                     <Message props={message}/>
@@ -192,7 +251,8 @@ export default function Group({groupData}) {
                                 onChange={(e) => setMessage(e.target.value)}
                                 placeholder="Type a message..."
                                 className={style.messageInput}
-                            />
+                                onKeyDown={send}
+                                />
                             <button 
                                 type="submit" 
                                 className={`${style.sendButton} ${message === "" ? style.disabled : ""}`}

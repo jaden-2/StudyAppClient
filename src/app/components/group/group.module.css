@@ -119,7 +119,8 @@
 .messageList {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 20px;
+    scroll-behavior: smooth;
     display: flex;
     row-gap: 10;
     flex-direction: column;
@@ -394,4 +395,22 @@
 :global(.dark-theme) .sendButton.disabled {
     background: #334155;
     opacity: 0.5;
+}
+
+/* Improve scrollbar appearance */
+.messageList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messageList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messageList::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+:global(.dark-theme) .messageList::-webkit-scrollbar-thumb {
+    background-color: #475569;
 }

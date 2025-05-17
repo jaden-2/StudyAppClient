@@ -13,6 +13,10 @@ export default function Signup(){
     const router = useRouter()
     const myElement = useRef(null);
 
+    //API ENDPOINT
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL
+    
+
     useEffect(()=>{
         if(myElement.current){
             myElement.current.style.display = (password==repassword)? "none": "inline";
@@ -42,7 +46,7 @@ export default function Signup(){
     const handleSignup = async (event)=>{
         event.preventDefault()
        
-        const url = "http://localhost:9000/api/studyApp/account"
+        const url = `${baseUrl}/account`
 
         if(password !== repassword){
             alert("Submission failed")

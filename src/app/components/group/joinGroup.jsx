@@ -49,10 +49,11 @@ export default function JoinGroup({ onClose, onJoin }) {
                     >
                         Cancel
                     </button>
+                    
                     <button 
                         type="submit"
                         className={styles.joinButton}
-                            
+                      
                         disabled={!groupCode.trim()}
                     >
                         Join Group

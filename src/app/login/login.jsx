@@ -8,9 +8,11 @@ export default function Login(){
     const [password, setPassword] = useState("")
     const [loader, setLoader] = useState(false)
     const [errorMsg, setErrorMsg] = useState(false)
-    const errorElement = useRef(null)
     const router = useRouter()
-
+    
+    //API ENDPOINT
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL
+    
     // Add useEffect to check dark mode preference
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
@@ -31,7 +33,7 @@ export default function Login(){
     const handleLogin = async (event)=>{
         event.preventDefault()
         setLoader(true);
-        const url = "http://localhost:9000/api/studyApp/auth/login"
+        const url = `${baseUrl}/auth/login`
         try{
             let response = await fetch(
                 url, 
