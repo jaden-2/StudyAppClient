@@ -6,7 +6,7 @@ import Image from 'next/image';
 const { useState, useRef, useEffect } = require("react");
 
 export default function Signup(){
-    const [username, setusername] = useState("Lizzy")
+    const [username, setusername] = useState("")
     const [password, setpassword] = useState("")
     const [repassword, setrepassword] = useState("")
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -48,10 +48,6 @@ export default function Signup(){
        
         const url = `${baseUrl}/account`
 
-        if(password !== repassword){
-            alert("Submission failed")
-            return
-        }
         
         let user = {
             username: username,
@@ -70,7 +66,6 @@ export default function Signup(){
         if(response.status == 201){
             let data = await response.json()
             router.push("/login")
-            console.log(data)
         }else{
             console.error("Failed to sign up")
         }

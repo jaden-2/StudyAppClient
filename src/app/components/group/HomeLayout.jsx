@@ -77,7 +77,6 @@ const Layout = () => {
 
         if(response.status == 200){
           const data = await response.json()
-          console.log(data)
           setCurrentUser(data)
         }
       }catch (e){
