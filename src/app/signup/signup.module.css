@@ -1,12 +1,4 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
+
 .container{
     background: white;
     padding: 32px 40px;
@@ -190,7 +182,7 @@ body {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-:global(.dark-theme) label {
+:global(.dark-theme) .label {
     color: #f8fafc;
 }
 
