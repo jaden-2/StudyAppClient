@@ -180,7 +180,7 @@
     border-top: 3px solid #6366f1;
 }
 
-:global(.dark-theme) label {
+:global(.dark-theme) .label {
     color: #f8fafc;
 }
 
